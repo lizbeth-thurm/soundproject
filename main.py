@@ -7,17 +7,32 @@ with wave.open("glow.wav", "r") as f:
     # Get the parameters of the WAV file
     sample_rate = f.getframerate()
     num_channels = f.getnchannels()
-    bit_depth = f.getsampwidth() * 8 # Multiplying by 8 returns bits instead of bytes
-    num_frames = f.getnframes()
+    samp_width = f.getsampwidth()
+    raw_bytes = f.readframes(getnframes())
 
-    # Calculate duration
-    duration = num_frames / sample_rate
+audio_data = np.frombuffer(raw_bytes, dtype=np.int16).reshape(-1, num_channels)
 
-    # Read raw bytes from the file
-    raw_bytes = f.readframes(f.getnframes())
+# Half Volume
+quiet = (audio_data * .5).astype(np.int16)
 
-# Convert bytes into numbers
-audio_data = np.frombuffer(raw_bytes, dtype=np.int16)
+# Reverse
+reversed_audio = audio_data[::-1]
+
+three_seconds = sample_rate * 3
+trimmed = audio_data[:three_seconds]
+
+def save_wav(filename, data, sample_rate, num_channels, samp_width):
+    with wave.open(filename, "w") as f:
+        f.setchannels(num_channels)
+        f.setsampwidth(samp_width)
+        f.setframerate(sample_rate)
+        f.writeframes(data.tobytes())
+
+save_wav("quiet.wav", quiet, sample_rate, num_channels, samp_width)
+save_wav("reversed.wav", reversed_audio, sample_rate, num_channels, samp_width)
+save_wav("trimmed.wav", trimmed, sample_rate, num_channels, samp_width)
+
+""""
 
 # Reshape into (num_samples, num_channels)
 audio_data = audio_data.reshape(-1, num_channels)
@@ -39,14 +54,11 @@ print(f"Min value: {audio_data.min()}")
 print(f"Max value: {audio_data.max()}")
 print(f"Data type: {audio_data.dtype}")
 
+print (f"Sample rate: {sample_rate} Hz")
+print(f"Channels: {num_channels}")
+print(f"Bit depth: {bit_depth} bit")
+print(f"Number of samples: {num_frames}")
+print(f"Duration: {duration:.2f} seconds")
 
-
-
-"""
-    print (f"Sample rate: {sample_rate} Hz")
-    print(f"Channels: {num_channels}")
-    print(f"Bit depth: {bit_depth} bit")
-    print(f"Number of samples: {num_frames}")
-    print(f"Duration: {duration:.2f} seconds")
 """
 
