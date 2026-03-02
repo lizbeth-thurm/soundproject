@@ -8,11 +8,12 @@ with wave.open("glow.wav", "r") as f:
     sample_rate = f.getframerate()
     num_channels = f.getnchannels()
     samp_width = f.getsampwidth()
-    raw_bytes = f.readframes(getnframes())
+    num_frames = f.getnframes()
+    raw_bytes = f.readframes(num_frames)
 
 audio_data = np.frombuffer(raw_bytes, dtype=np.int16).reshape(-1, num_channels)
 
-# Half Volume
+# Half Volumeit
 quiet = (audio_data * .5).astype(np.int16)
 
 # Reverse
@@ -23,7 +24,7 @@ trimmed = audio_data[:three_seconds]
 
 def save_wav(filename, data, sample_rate, num_channels, samp_width):
     with wave.open(filename, "w") as f:
-        f.setchannels(num_channels)
+        f.setnchannels(num_channels)
         f.setsampwidth(samp_width)
         f.setframerate(sample_rate)
         f.writeframes(data.tobytes())
