@@ -19,7 +19,18 @@ with wave.open("glow.wav", "r") as f:
 # Convert bytes into numbers
 audio_data = np.frombuffer(raw_bytes, dtype=np.int16)
 
+# Reshape into (num_samples, num_channels)
+audio_data = audio_data.reshape(-1, num_channels)
 
+print(f"Shape after reshape: {audio_data.shape}")
+print(f"First 10 frames:\n{audio_data[:10]}")
+
+# Assign each channel individually
+left_channel = audio_data[:, 0]
+right_channel = audio_data[:, 1]
+
+print(f"\nLeft Channel first 10 samples: {left_channel[:10]}")
+print(f"Right channel first 10 samples: {right_channel[:10]}")
 
 print(f"Type: {type(audio_data)}")
 print (f"Shape: {audio_data.shape}")
